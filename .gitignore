@@ -1,0 +1,35 @@
+# ──────────────────────────────────────────────────────────────
+# macOS / editors
+# ──────────────────────────────────────────────────────────────
+.DS_Store
+*.swp
+*~
+*.orig
+*.rej
+.idea/
+.vscode/
+
+# Claude Code — machine-specific local settings
+.claude/settings.local.json
+
+# Local code-signing override for build.sh (personal cert id; never shared)
+.signing.local
+
+# ──────────────────────────────────────────────────────────────
+# Swift Package Manager
+# ──────────────────────────────────────────────────────────────
+.build/
+.swiftpm/
+# (No external dependencies, so there is no Package.resolved to track.)
+
+# ──────────────────────────────────────────────────────────────
+# Xcode — user state (created if you open Package.swift in Xcode)
+# ──────────────────────────────────────────────────────────────
+xcuserdata/
+*.xcuserstate
+DerivedData/
+
+# ──────────────────────────────────────────────────────────────
+# build.sh output (the assembled, signed .app bundle)
+# ──────────────────────────────────────────────────────────────
+/build/
