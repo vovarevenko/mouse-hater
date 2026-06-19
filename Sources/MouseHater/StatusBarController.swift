@@ -20,8 +20,8 @@ final class StatusBarController: NSObject {
 
         if let button = statusItem.button {
             button.image = NSImage(systemSymbolName: "cursorarrow.click.2",
-                                   accessibilityDescription: "MouseHater")
-            button.toolTip = "MouseHater"
+                                   accessibilityDescription: "Mouse Hater")
+            button.toolTip = "Mouse Hater"
         }
 
         buildMenu()
@@ -71,7 +71,7 @@ final class StatusBarController: NSObject {
 
         menu.addItem(.separator())
 
-        let quit = NSMenuItem(title: "Quit MouseHater",
+        let quit = NSMenuItem(title: "Quit Mouse Hater",
                               action: #selector(quit),
                               keyEquivalent: "q")
         quit.target = self
@@ -97,7 +97,7 @@ final class StatusBarController: NSObject {
 
     @objc private func showGuide() {
         let alert = NSAlert()
-        alert.messageText = "MouseHater — keyboard guide"
+        alert.messageText = "Mouse Hater — keyboard guide"
         let hosting = NSHostingView(rootView: GuideView())
         hosting.frame = NSRect(origin: .zero, size: hosting.fittingSize)
         alert.accessoryView = hosting

@@ -1,4 +1,4 @@
-# MouseHater
+# Mouse Hater
 
 Click anywhere on screen with the keyboard — no mouse, no trackpad.
 
@@ -94,9 +94,9 @@ You can also open `Package.swift` in Xcode and run from there.
 
 ## Accessibility permission
 
-MouseHater needs **Accessibility** access to read the global keyboard (the
+Mouse Hater needs **Accessibility** access to read the global keyboard (the
 trigger) and to synthesise clicks. On first launch it prompts and opens
-*System Settings → Privacy & Security → Accessibility*; enable **MouseHater**
+*System Settings → Privacy & Security → Accessibility*; enable **Mouse Hater**
 there. The menu shows the current status, and the menu's *Accessibility* item
 reopens that pane.
 

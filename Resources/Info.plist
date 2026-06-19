@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>MouseHater</string>
+	<string>Mouse Hater</string>
 	<key>CFBundleDisplayName</key>
-	<string>MouseHater</string>
+	<string>Mouse Hater</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.revenko.mouse-hater</string>
 	<key>CFBundleExecutable</key>

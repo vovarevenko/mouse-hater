@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Copyright © 2026 Vova Revenko
 #
-# Builds MouseHater and assembles a runnable .app bundle under ./build.
+# Builds Mouse Hater and assembles a runnable .app bundle under ./build.
 # Usage: ./build.sh [debug|release]   (default: release)
 set -euo pipefail
 
