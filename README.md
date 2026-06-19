@@ -12,7 +12,7 @@ sequence of keys to narrow to a point and click it.
    own two letters** — a column key (`a … ;`, left → right) and a row key
    (`q … /`, top → bottom):
 
-   ```
+   ```txt
     ┌────┬────┬────┬─────┬────┐
     │ aq │ sq │ dq │ …kq │ ;q │   ← every cell is labelled
     ├────┼────┼────┼─────┼────┤      with its own column+row
