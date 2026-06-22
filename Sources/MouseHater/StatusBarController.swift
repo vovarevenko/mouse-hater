@@ -83,7 +83,7 @@ final class StatusBarController: NSObject {
 
         let quit = NSMenuItem(title: "Quit Mouse Hater",
                               action: #selector(quit),
-                              keyEquivalent: "q")
+                              keyEquivalent: "")
         quit.target = self
         menu.addItem(quit)
 
