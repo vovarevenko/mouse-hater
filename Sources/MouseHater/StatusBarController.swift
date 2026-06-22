@@ -11,6 +11,7 @@ final class StatusBarController: NSObject {
 
     private var singleTapItem: NSMenuItem!
     private var doubleTapItem: NSMenuItem!
+    private var loginItem: NSMenuItem!
     private var accessItem: NSMenuItem!
 
     init(settings: Settings) {
@@ -25,6 +26,7 @@ final class StatusBarController: NSObject {
         }
 
         buildMenu()
+        menu.delegate = self
         statusItem.menu = menu
     }
 
@@ -55,6 +57,14 @@ final class StatusBarController: NSObject {
 
         menu.addItem(.separator())
 
+        loginItem = NSMenuItem(title: "Open at login",
+                               action: #selector(toggleLoginItem),
+                               keyEquivalent: "")
+        loginItem.target = self
+        menu.addItem(loginItem)
+
+        menu.addItem(.separator())
+
         let guideItem = NSMenuItem(title: "Keyboard guide…",
                                    action: #selector(showGuide),
                                    keyEquivalent: "")
@@ -78,11 +88,26 @@ final class StatusBarController: NSObject {
         menu.addItem(quit)
 
         refreshTriggerChecks()
+        refreshLoginItemCheck()
     }
 
     private func refreshTriggerChecks() {
         singleTapItem.state = settings.triggerMode == .singleTap ? .on : .off
         doubleTapItem.state = settings.triggerMode == .doubleTap ? .on : .off
+    }
+
+    private func refreshLoginItemCheck() {
+        loginItem.state = LoginItem.isEnabled ? .on : .off
+    }
+
+    @objc private func toggleLoginItem() {
+        // If the user disabled us in System Settings, macOS won't let us flip it
+        // back — and register() would silently fail. Hand off to Settings for
+        // both that case and any other rejected change.
+        if LoginItem.requiresApproval || !LoginItem.setEnabled(!LoginItem.isEnabled) {
+            LoginItem.openSystemSettings()
+        }
+        refreshLoginItemCheck()
     }
 
     @objc private func selectSingleTap() {
@@ -113,5 +138,14 @@ final class StatusBarController: NSObject {
 
     @objc private func quit() {
         NSApp.terminate(nil)
+    }
+}
+
+// MARK: - NSMenuDelegate
+
+extension StatusBarController: NSMenuDelegate {
+    func menuWillOpen(_ menu: NSMenu) {
+        // The login-item state can change from System Settings behind our back.
+        refreshLoginItemCheck()
     }
 }

@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
         hotkey.delegate = self
         overlay.onDeactivate = { [weak self] in self?.hotkey.resetTriggerState() }
 
+        bootstrapLoginItem()
         bootstrapAccessibility()
     }
 
@@ -35,6 +36,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
 
     func overlayHandleKeyUp(_ keycode: Int64) {
         overlay.handleKeyUp(keycode)
+    }
+
+    // MARK: - Login item
+
+    /// A menu-bar agent is useless when it isn't running, so opt into launch-at-
+    /// login on the very first launch. This runs exactly once: afterward the
+    /// user's choice (here or in System Settings) is theirs to keep.
+    private func bootstrapLoginItem() {
+        guard !settings.didOfferLoginItem else { return }
+
+        // The user may already have a stake — enabled it themselves, or disabled
+        // it in System Settings (.requiresApproval). Either way, stop offering.
+        if LoginItem.isEnabled || LoginItem.requiresApproval {
+            settings.didOfferLoginItem = true
+            return
+        }
+
+        // Mark the one-time setup done only once registration actually succeeds,
+        // so a transient failure is retried on the next launch instead of being
+        // skipped forever.
+        if LoginItem.setEnabled(true) {
+            settings.didOfferLoginItem = true
+        }
     }
 
     // MARK: - Accessibility
