@@ -14,6 +14,11 @@ let package = Package(
             name: "MouseHater",
             dependencies: ["MouseHaterCore"],
             path: "Sources/MouseHater"
+        ),
+        .testTarget(
+            name: "MouseHaterCoreTests",
+            dependencies: ["MouseHaterCore"],
+            path: "Tests/MouseHaterCoreTests"
         )
     ],
     swiftLanguageModes: [.v5]
