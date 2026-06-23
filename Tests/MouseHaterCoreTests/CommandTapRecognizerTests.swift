@@ -60,6 +60,30 @@ final class CommandTapRecognizerTests: XCTestCase {
         XCTAssertTrue(performTap(on: &recognizer, downAt: 10.25, mode: .doubleTap))
     }
 
+    func testNonCommandKeyBetweenDoubleTapsBreaksPair() {
+        var recognizer = CommandTapRecognizer()
+
+        XCTAssertFalse(performTap(on: &recognizer, downAt: 10, mode: .doubleTap))
+        _ = recognizer.handle(.keyDown(isRepeat: false), at: 10.2, mode: .doubleTap)
+        _ = recognizer.handle(.keyUp, at: 10.25, mode: .doubleTap)
+
+        XCTAssertFalse(performTap(on: &recognizer, downAt: 10.3, mode: .doubleTap))
+    }
+
+    func testOtherModifierBetweenDoubleTapsBreaksPair() {
+        var recognizer = CommandTapRecognizer()
+
+        XCTAssertFalse(performTap(on: &recognizer, downAt: 10, mode: .doubleTap))
+        _ = recognizer.handle(.flagsChanged(command: false, otherModifiers: true),
+                              at: 10.2,
+                              mode: .doubleTap)
+        _ = recognizer.handle(.flagsChanged(command: false, otherModifiers: false),
+                              at: 10.25,
+                              mode: .doubleTap)
+
+        XCTAssertFalse(performTap(on: &recognizer, downAt: 10.3, mode: .doubleTap))
+    }
+
     func testExpiredDoubleTapStartsANewPair() {
         var recognizer = CommandTapRecognizer()
 

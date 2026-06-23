@@ -42,13 +42,21 @@ public struct CommandTapRecognizer {
                                 mode: TriggerMode) -> Bool {
         switch input {
         case .keyDown(let isRepeat):
-            if !isRepeat { otherKeysDown += 1 }
+            if !isRepeat {
+                otherKeysDown += 1
+                lastTapAt = nil
+            }
             if commandDown { tapCandidate = false }
 
         case .keyUp:
             if otherKeysDown > 0 { otherKeysDown -= 1 }
 
         case .flagsChanged(let commandNow, let otherModifiers):
+            if otherModifiers {
+                tapCandidate = false
+                lastTapAt = nil
+            }
+
             if commandNow && !commandDown {
                 commandDown = true
                 commandDownAt = timestamp
@@ -57,10 +65,11 @@ public struct CommandTapRecognizer {
                 commandDown = false
                 let duration = timestamp - commandDownAt
                 defer { tapCandidate = false }
-                guard tapCandidate, duration <= tapMaxDuration else { return false }
+                guard tapCandidate, duration <= tapMaxDuration else {
+                    lastTapAt = nil
+                    return false
+                }
                 return registerTap(at: timestamp, mode: mode)
-            } else if commandNow && otherModifiers {
-                tapCandidate = false
             }
         }
 
