@@ -1,6 +1,7 @@
 // Copyright © 2026 Vova Revenko
 
 import AppKit
+import MouseHaterCore
 
 /// A key the overlay understands once it is active. Letter/symbol keys are
 /// delivered as raw keycodes; the controller interprets them per stage.
@@ -182,9 +183,9 @@ final class OverlayController {
             // otherwise → the centre of what's been narrowed so far.
             let target: CGPoint
             switch stage {
-            case .column: target = CGEvent(source: nil)?.location ?? center(region)
+            case .column: target = CGEvent(source: nil)?.location ?? GridGeometry.center(of: region)
             case .nudge:  target = cursorPoint
-            default:      target = center(region)
+            default:      target = GridGeometry.center(of: region)
             }
             performClick(at: target, shift: shift)
 
@@ -198,13 +199,17 @@ final class OverlayController {
         switch stage {
         case .column:
             if let col = Self.columnByKeyCode[keycode] {
-                region = columnRegion(region, col)
+                region = GridGeometry.columnRegion(in: region,
+                                                   index: col,
+                                                   count: Self.columns)
                 stage = .row
                 refreshView()
             }
         case .row:
             if let row = Self.cellByKeyCode[keycode] {
-                region = rowRegion(region, row)
+                region = GridGeometry.rowRegion(in: region,
+                                                index: row,
+                                                count: Self.verticalRows)
                 stage = .refine
                 refreshView()
             }
@@ -236,7 +241,11 @@ final class OverlayController {
     }
 
     private func enterNudge(cellIndex: Int, heldKey: Int64, rightClick: Bool) {
-        cursorPoint = center(gridCell(region, cellIndex))
+        let cell = GridGeometry.gridCell(in: region,
+                                         index: cellIndex,
+                                         columns: Self.columns,
+                                         rows: Self.gridRows)
+        cursorPoint = GridGeometry.center(of: cell)
         heldKeyCode = heldKey
         nudgeRightClick = rightClick
         heldNudgeKeys = []
@@ -312,30 +321,6 @@ final class OverlayController {
     private func performClick(at point: CGPoint, shift: Bool) {
         dismiss() // tear down first so the click lands on the app beneath
         Clicker.click(at: point, type: shift ? .right : .left)
-    }
-
-    // MARK: - Geometry (global, top-left origin)
-
-    private func columnRegion(_ rect: CGRect, _ col: Int) -> CGRect {
-        let w = rect.width / CGFloat(Self.columns)
-        return CGRect(x: rect.minX + CGFloat(col) * w, y: rect.minY, width: w, height: rect.height)
-    }
-
-    private func rowRegion(_ rect: CGRect, _ row: Int) -> CGRect {
-        let h = rect.height / CGFloat(Self.verticalRows)
-        return CGRect(x: rect.minX, y: rect.minY + CGFloat(row) * h, width: rect.width, height: h)
-    }
-
-    private func gridCell(_ rect: CGRect, _ index: Int) -> CGRect {
-        let col = index % Self.columns
-        let row = index / Self.columns
-        let w = rect.width / CGFloat(Self.columns)
-        let h = rect.height / CGFloat(Self.gridRows)
-        return CGRect(x: rect.minX + CGFloat(col) * w, y: rect.minY + CGFloat(row) * h, width: w, height: h)
-    }
-
-    private func center(_ rect: CGRect) -> CGPoint {
-        CGPoint(x: rect.midX, y: rect.midY)
     }
 
     private func refreshView() {

@@ -6,8 +6,13 @@ let package = Package(
     name: "MouseHater",
     platforms: [.macOS(.v13)],
     targets: [
+        .target(
+            name: "MouseHaterCore",
+            path: "Sources/MouseHaterCore"
+        ),
         .executableTarget(
             name: "MouseHater",
+            dependencies: ["MouseHaterCore"],
             path: "Sources/MouseHater"
         )
     ],

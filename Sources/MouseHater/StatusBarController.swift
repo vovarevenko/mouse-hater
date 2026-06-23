@@ -1,6 +1,7 @@
 // Copyright © 2026 Vova Revenko
 
 import AppKit
+import MouseHaterCore
 import SwiftUI
 
 /// The status-bar menu: trigger mode, an Accessibility shortcut, and Quit.

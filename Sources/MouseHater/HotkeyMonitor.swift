@@ -2,6 +2,7 @@
 
 import ApplicationServices
 import CoreGraphics
+import MouseHaterCore
 import QuartzCore
 
 protocol HotkeyMonitorDelegate: AnyObject {
@@ -24,21 +25,13 @@ final class HotkeyMonitor {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
 
-    // Trigger-detection state.
-    private var commandDown = false
-    private var commandDownAt: CFTimeInterval = 0
-    private var tapCandidate = false          // a clean Command press, still eligible
-    private var lastTapAt: CFTimeInterval = 0  // for double-tap detection
-    private var otherKeysDown = 0             // physical non-modifier keys held down
+    private var tapRecognizer = CommandTapRecognizer()
 
     /// Keycodes whose keyDown we swallowed while the overlay was active, so we
     /// can swallow the matching keyUp too — even after the overlay dismisses
     /// (dismiss happens synchronously inside the keyDown callback, before the
     /// physical key is released). Self-draining: each keyUp removes its code.
     private var swallowedKeys = Set<Int64>()
-
-    private let tapMaxDuration: CFTimeInterval = 0.3
-    private let doubleTapGap: CFTimeInterval = 0.4
 
     private static let escapeKeyCode: Int64 = 53
     private static let spaceKeyCode: Int64 = 49
@@ -87,10 +80,7 @@ final class HotkeyMonitor {
 
     /// Clears in-flight trigger detection (called when the overlay closes).
     func resetTriggerState() {
-        commandDown = false
-        tapCandidate = false
-        lastTapAt = 0
-        otherKeysDown = 0
+        tapRecognizer.reset()
         // Intentionally NOT clearing swallowedKeys: a keyUp pending after dismiss
         // still needs to be swallowed.
     }
@@ -170,65 +160,32 @@ final class HotkeyMonitor {
     // MARK: - Trigger detection
 
     private func detectTrigger(type: CGEventType, event: CGEvent) {
+        let input: CommandTapRecognizer.Input
         switch type {
         case .keyDown:
-            // Count physically-held keys (ignore auto-repeat so one key counts once).
-            if event.getIntegerValueField(.keyboardEventAutorepeat) == 0 {
-                otherKeysDown += 1
-            }
-            // A real key pressed while Command is held → it's a shortcut, not a tap.
-            if commandDown { tapCandidate = false }
+            let isRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0
+            input = .keyDown(isRepeat: isRepeat)
 
         case .keyUp:
-            if otherKeysDown > 0 { otherKeysDown -= 1 }
+            input = .keyUp
 
         case .flagsChanged:
             let flags = event.flags
-            let commandNow = flags.contains(.maskCommand)
             let otherModifiers = flags.contains(.maskShift)
                 || flags.contains(.maskControl)
                 || flags.contains(.maskAlternate)
-
-            if commandNow && !commandDown {
-                // Command pressed: a clean tap candidate only if nothing else is held.
-                commandDown = true
-                commandDownAt = CACurrentMediaTime()
-                tapCandidate = !otherModifiers && otherKeysDown == 0
-            } else if !commandNow && commandDown {
-                // Command released — decide whether it was a clean tap.
-                commandDown = false
-                let duration = CACurrentMediaTime() - commandDownAt
-                if tapCandidate && duration <= tapMaxDuration {
-                    registerTap()
-                }
-                tapCandidate = false
-            } else if commandNow && otherModifiers {
-                // Another modifier joined Command → no longer a clean tap.
-                tapCandidate = false
-            }
+            input = .flagsChanged(command: flags.contains(.maskCommand),
+                                  otherModifiers: otherModifiers)
 
         default:
-            break
+            return
         }
-    }
 
-    private func registerTap() {
-        let now = CACurrentMediaTime()
-        switch settings.triggerMode {
-        case .singleTap:
-            fireTrigger()
-        case .doubleTap:
-            if now - lastTapAt <= doubleTapGap {
-                lastTapAt = 0
-                fireTrigger()
-            } else {
-                lastTapAt = now
-            }
+        if tapRecognizer.handle(input,
+                                at: CACurrentMediaTime(),
+                                mode: settings.triggerMode) {
+            delegate?.hotkeyTriggered()
         }
-    }
-
-    private func fireTrigger() {
-        delegate?.hotkeyTriggered()
     }
 }
 
