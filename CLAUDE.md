@@ -4,11 +4,13 @@ macOS menu-bar agent (`LSUIElement`) for keyboard-driven mouse clicking: a Swift
 executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
 `CGEventTap`) detects the Command-tap trigger and feeds keys to `OverlayController`
 (selection state machine + geometry), which draws via `OverlayView` and clicks via
-`Clicker`.
+`Clicker`. Pure trigger recognition and grid subdivision live in
+`MouseHaterCore` and are covered by unit tests.
 
 ## Commands
 
 - `swift build` — compile check.
+- `swift test` — run the pure core state-machine and geometry tests.
 - `./build.sh [debug|release]` — build, assemble, and sign `build/MouseHater.app`
   (release by default); `open` it to run.
 

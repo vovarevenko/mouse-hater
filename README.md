@@ -85,6 +85,9 @@ Requires macOS 13+ and a Swift 6 toolchain (Xcode 15+).
 open build/MouseHater.app
 ```
 
+For development, run `swift test` to verify the trigger state machine and grid
+geometry independently from AppKit.
+
 `build.sh` compiles with SwiftPM, assembles the `.app` bundle, and code-signs it
 (ad-hoc by default — see *Accessibility permission* for a stable identity). The
 app runs as a background agent (no Dock icon); look for the
