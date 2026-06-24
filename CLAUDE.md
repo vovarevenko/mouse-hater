@@ -22,7 +22,8 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
   flipped `OverlayView` is offset by the display origin. Don't introduce AppKit's
   bottom-left coordinates.
 - **Key matching is by virtual keycode (physical position), not character** — keep
-  it keyboard-layout-independent.
+  it keyboard-layout-independent. Overlay labels are QWERTY position labels, not
+  localized output characters.
 - **The `CGEventTap`** lives on the main run loop, must be re-enabled on
   `.tapDisabledByTimeout`/`.tapDisabledByUserInput`, and a keyDown swallowed while
   the overlay is active must also swallow its keyUp.

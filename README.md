@@ -46,6 +46,9 @@ You can turn it off or back on any time from the status-bar menu.
 
 So the quick path is three keystrokes: `column`, `row`, `refine`.
 
+The labels refer to physical QWERTY key positions, not the character produced by
+the active keyboard layout. This keeps the controls layout-independent.
+
 ### Nudge — fine-tune before clicking
 
 For tiny targets, **hold** the final `10 × 3` key instead of tapping. After a
