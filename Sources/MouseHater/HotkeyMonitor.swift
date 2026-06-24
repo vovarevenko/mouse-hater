@@ -36,6 +36,8 @@ final class HotkeyMonitor {
     private static let escapeKeyCode: Int64 = 53
     private static let spaceKeyCode: Int64 = 49
 
+    var isRunning: Bool { eventTap != nil }
+
     init(settings: Settings) {
         self.settings = settings
     }
@@ -46,7 +48,15 @@ final class HotkeyMonitor {
     /// not been granted yet (the tap can't be created). Safe to call repeatedly.
     @discardableResult
     func start() -> Bool {
-        if eventTap != nil { return true }
+        guard Self.isAccessibilityTrusted() else {
+            stop()
+            return false
+        }
+
+        if let tap = eventTap {
+            if CFMachPortIsValid(tap) { return true }
+            stop()
+        }
 
         let mask: CGEventMask =
             (1 << CGEventType.keyDown.rawValue) |
@@ -73,9 +83,29 @@ final class HotkeyMonitor {
         return true
     }
 
-    static func promptAccessibility() {
+    func stop() {
+        if let source = runLoopSource {
+            CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .commonModes)
+        }
+        if let tap = eventTap {
+            CFMachPortInvalidate(tap)
+        }
+
+        runLoopSource = nil
+        eventTap = nil
+        swallowedKeys.removeAll()
+        tapRecognizer.reset()
+    }
+
+    static func isAccessibilityTrusted(prompt: Bool = false) -> Bool {
+        guard prompt else { return AXIsProcessTrusted() }
+
         let key = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
-        _ = AXIsProcessTrustedWithOptions([key: true] as CFDictionary)
+        return AXIsProcessTrustedWithOptions([key: true] as CFDictionary)
+    }
+
+    static func promptAccessibility() {
+        _ = isAccessibilityTrusted(prompt: true)
     }
 
     /// Clears in-flight trigger detection (called when the overlay closes).
@@ -90,7 +120,9 @@ final class HotkeyMonitor {
     fileprivate func handle(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
         // The system can silently disable the tap; re-enable and move on.
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
-            if let tap = eventTap { CGEvent.tapEnable(tap: tap, enable: true) }
+            if Self.isAccessibilityTrusted(), let tap = eventTap {
+                CGEvent.tapEnable(tap: tap, enable: true)
+            }
             // Key/flag events fired while the tap was off are lost, so any tracked
             // state is now unreliable — clear the swallow set (to avoid a stranded
             // keycode swallowing a later keyUp in another app) and the trigger

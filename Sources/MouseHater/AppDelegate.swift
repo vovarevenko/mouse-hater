@@ -7,10 +7,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
     private let overlay = OverlayController()
     private var hotkey: HotkeyMonitor!
     private var status: StatusBarController!
-    private var accessTimer: Timer?
+    private var accessibilityTimer: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         status = StatusBarController(settings: settings)
+        status.onMenuOpen = { [weak self] in
+            self?.refreshAccessibility(promptIfNeeded: false)
+        }
 
         hotkey = HotkeyMonitor(settings: settings)
         hotkey.delegate = self
@@ -21,7 +24,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        accessTimer?.invalidate()
+        accessibilityTimer?.invalidate()
+        hotkey.stop()
     }
 
     // MARK: - HotkeyMonitorDelegate
@@ -64,21 +68,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
     // MARK: - Accessibility
 
     private func bootstrapAccessibility() {
-        if hotkey.start() {
-            status.updateAccess(granted: true)
+        refreshAccessibility(promptIfNeeded: true)
+
+        accessibilityTimer?.invalidate()
+        accessibilityTimer = Timer.scheduledTimer(withTimeInterval: 2.0,
+                                                  repeats: true) { [weak self] _ in
+            self?.refreshAccessibility(promptIfNeeded: false)
+        }
+    }
+
+    private func refreshAccessibility(promptIfNeeded: Bool) {
+        let trusted = HotkeyMonitor.isAccessibilityTrusted(prompt: promptIfNeeded)
+
+        guard trusted else {
+            hotkey.stop()
+            overlay.dismiss()
+            status.updateAccess(.notGranted)
             return
         }
 
-        // Not trusted yet: prompt, then poll until the user grants access.
-        HotkeyMonitor.promptAccessibility()
-        status.updateAccess(granted: false)
-        accessTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
-            guard let self else { return }
-            if self.hotkey.start() {
-                self.status.updateAccess(granted: true)
-                timer.invalidate()
-                self.accessTimer = nil
-            }
+        if hotkey.start() {
+            status.updateAccess(.granted)
+        } else {
+            overlay.dismiss()
+            status.updateAccess(.unavailable)
         }
     }
 }

@@ -6,9 +6,17 @@ import SwiftUI
 
 /// The status-bar menu: trigger mode, an Accessibility shortcut, and Quit.
 final class StatusBarController: NSObject {
+    enum AccessibilityStatus {
+        case granted
+        case notGranted
+        case unavailable
+    }
+
     private let settings: Settings
     private let statusItem: NSStatusItem
     private let menu = NSMenu()
+
+    var onMenuOpen: (() -> Void)?
 
     private var singleTapItem: NSMenuItem!
     private var doubleTapItem: NSMenuItem!
@@ -31,10 +39,18 @@ final class StatusBarController: NSObject {
         statusItem.menu = menu
     }
 
-    func updateAccess(granted: Bool) {
-        accessItem.title = granted
-            ? "Accessibility: granted"
-            : "Accessibility: not granted — click to open Settings"
+    func updateAccess(_ status: AccessibilityStatus) {
+        switch status {
+        case .granted:
+            accessItem.title = "Accessibility: granted"
+            accessItem.state = .on
+        case .notGranted:
+            accessItem.title = "Accessibility: not granted — click to open Settings"
+            accessItem.state = .off
+        case .unavailable:
+            accessItem.title = "Accessibility: unavailable — click to open Settings"
+            accessItem.state = .mixed
+        }
     }
 
     // MARK: - Menu
@@ -146,6 +162,7 @@ final class StatusBarController: NSObject {
 
 extension StatusBarController: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
+        onMenuOpen?()
         // The login-item state can change from System Settings behind our back.
         refreshLoginItemCheck()
     }
