@@ -5,6 +5,18 @@ Click anywhere on screen with the keyboard — no mouse, no trackpad.
 Tap **Command** to summon a labelled grid over the screen, then type a short
 sequence of keys to narrow to a point and click it.
 
+## First launch
+
+Open `MouseHater.app`, then look for the cursor icon in the menu bar.
+
+Mouse Hater asks for **Accessibility** access on first launch. Enable it in
+*System Settings → Privacy & Security → Accessibility* so the app can read the
+global keyboard trigger and post clicks.
+
+It also registers itself as **Open at Login** once, so it is available after
+restarts. macOS shows its standard login-item notification when this happens.
+You can turn it off or back on any time from the status-bar menu.
+
 ## How it works
 
 1. **Tap Command** (configurable — see *Trigger* below). A `10 × 30` grid appears
@@ -76,10 +88,6 @@ Choose in the status-bar menu:
 
 The menu also has a **Keyboard guide…** item — an in-app cheat sheet of the keys.
 
-On first launch, Mouse Hater registers itself as **Open at Login** so it is
-available after restarts. macOS shows its standard login-item notification when
-this happens. You can turn it off or back on any time from the status-bar menu.
-
 ## Build & run
 
 Requires macOS 13+ and a Swift 6 toolchain (Xcode 16+).
@@ -111,10 +119,8 @@ You can also open `Package.swift` in Xcode and run from there.
 ## Accessibility permission
 
 Mouse Hater needs **Accessibility** access to read the global keyboard (the
-trigger) and to synthesise clicks. On first launch it prompts and opens
-*System Settings → Privacy & Security → Accessibility*; enable **Mouse Hater**
-there. The menu shows the current status, and the menu's *Accessibility* item
-reopens that pane.
+trigger) and to synthesise clicks. The menu shows the current status, and the
+menu's *Accessibility* item reopens the right System Settings pane.
 
 > **Keeping the permission across rebuilds.** macOS tracks the grant by the app's
 > code signature, so the default ad-hoc build asks for access again after each
