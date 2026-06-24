@@ -8,18 +8,34 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 CONFIG="${1:-release}"
 APP="$ROOT/build/MouseHater.app"
+INFO_PLIST="$ROOT/Resources/Info.plist"
+
+case "$CONFIG" in
+  debug|release) ;;
+  *)
+    echo "Usage: $0 [debug|release]" >&2
+    exit 64
+    ;;
+esac
 
 echo "==> swift build -c $CONFIG"
+BIN_DIR="$(swift build --package-path "$ROOT" -c "$CONFIG" --show-bin-path)"
 swift build --package-path "$ROOT" -c "$CONFIG"
 
-BIN_DIR="$(swift build --package-path "$ROOT" -c "$CONFIG" --show-bin-path)"
 BIN="$BIN_DIR/MouseHater"
+if [ ! -x "$BIN" ]; then
+  echo "Built executable not found: $BIN" >&2
+  exit 1
+fi
+
+echo "==> Validating Info.plist"
+plutil -lint "$INFO_PLIST" >/dev/null
 
 echo "==> Assembling $APP"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/MouseHater"
-cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
+cp "$INFO_PLIST" "$APP/Contents/Info.plist"
 
 # Code signing. The default is ad-hoc. A stable signing identity keeps the macOS
 # Accessibility grant from resetting on every rebuild (TCC tracks the identity,
@@ -44,6 +60,7 @@ else
   echo "==> Code signing with stable identity ($SIGN_IDENTITY)"
 fi
 codesign --force --sign "$SIGN_IDENTITY" --identifier org.revenko.mouse-hater "$APP"
+codesign --verify --strict --verbose=2 "$APP"
 
 echo "==> Done: $APP"
 echo "    Run with:  open \"$APP\""
