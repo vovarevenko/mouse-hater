@@ -48,7 +48,7 @@ if [ -z "${SIGN_IDENTITY:-}" ] && [ -f "$ROOT/.signing.local" ]; then
 fi
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
-if [ "$SIGN_IDENTITY" != "-" ] && ! security find-identity -p codesigning 2>/dev/null | grep -q "$SIGN_IDENTITY"; then
+if [ "$SIGN_IDENTITY" != "-" ] && ! security find-identity -p codesigning 2>/dev/null | grep -Fq -- "$SIGN_IDENTITY"; then
   echo "==> Signing identity '$SIGN_IDENTITY' not found — falling back to ad-hoc"
   echo "    (Accessibility permission will reset on each rebuild.)"
   SIGN_IDENTITY="-"
