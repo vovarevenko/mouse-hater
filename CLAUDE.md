@@ -34,3 +34,6 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
 - **Signing/Accessibility:** a stable signing identity lives in untracked
   `.signing.local`; an ad-hoc build, or changing the bundle id, means re-granting
   Accessibility.
+- **Login item:** first successful launch auto-registers the app as Open at
+  Login exactly once. macOS surfaces this as a login-item notification; the menu
+  remains the user's explicit toggle afterward.

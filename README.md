@@ -76,6 +76,10 @@ Choose in the status-bar menu:
 
 The menu also has a **Keyboard guide…** item — an in-app cheat sheet of the keys.
 
+On first launch, Mouse Hater registers itself as **Open at Login** so it is
+available after restarts. macOS shows its standard login-item notification when
+this happens. You can turn it off or back on any time from the status-bar menu.
+
 ## Build & run
 
 Requires macOS 13+ and a Swift 6 toolchain (Xcode 16+).
