@@ -25,8 +25,9 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
 - **The `CGEventTap`** lives on the main run loop, must be re-enabled on
   `.tapDisabledByTimeout`/`.tapDisabledByUserInput`, and a keyDown swallowed while
   the overlay is active must also swallow its keyUp.
-- **Swift 5 language mode** is pinned in `Package.swift` because the C event-tap
-  callback touches shared state; bumping to Swift 6 won't compile without reworking it.
+- **Swift 6 language mode** is enabled in `Package.swift`. UI, timers, and the
+  event-tap bridge are intentionally main-actor-bound; don't remove those
+  annotations unless the concurrency model is reworked.
 - **Names:** the display name has a space (`Mouse Hater`); the executable, bundle,
   and SwiftPM target don't (`MouseHater`) — don't unify them or the build breaks.
 - **Signing/Accessibility:** a stable signing identity lives in untracked
