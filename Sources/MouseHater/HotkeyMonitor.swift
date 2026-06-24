@@ -1,10 +1,11 @@
 // Copyright © 2026 Vova Revenko
 
-import ApplicationServices
-import CoreGraphics
+@preconcurrency import ApplicationServices
+@preconcurrency import CoreGraphics
 import MouseHaterCore
 import QuartzCore
 
+@MainActor
 protocol HotkeyMonitorDelegate: AnyObject {
     var overlayIsActive: Bool { get }
     func hotkeyTriggered()
@@ -18,6 +19,7 @@ protocol HotkeyMonitorDelegate: AnyObject {
 ///   1. While the overlay is closed, watches for the Command trigger.
 ///   2. While the overlay is open, intercepts the keyboard so navigation keys
 ///      drive the grid instead of leaking into the focused app.
+@MainActor
 final class HotkeyMonitor {
     weak var delegate: HotkeyMonitorDelegate?
 
@@ -229,5 +231,7 @@ private func eventTapCallback(proxy: CGEventTapProxy,
                               refcon: UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>? {
     guard let refcon else { return Unmanaged.passUnretained(event) }
     let monitor = Unmanaged<HotkeyMonitor>.fromOpaque(refcon).takeUnretainedValue()
-    return monitor.handle(type: type, event: event)
+    return MainActor.assumeIsolated {
+        monitor.handle(type: type, event: event)
+    }
 }

@@ -24,6 +24,7 @@ private enum Stage {
 /// Selection narrows a rectangle, kept in **global display coordinates**
 /// (top-left origin, points) so the final point goes straight to `Clicker`.
 /// Only the rectangle handed to the view is translated into view-local space.
+@MainActor
 final class OverlayController {
     /// 10×3 layout for the refine grid, drawn row by row.
     static let refineLayout = ["qwertyuiop", "asdfghjkl;", "zxcvbnm,./"]
@@ -275,7 +276,9 @@ final class OverlayController {
     private func startNudgeTimer() {
         stopNudgeTimer()
         let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-            self?.nudgeTick()
+            MainActor.assumeIsolated {
+                self?.nudgeTick()
+            }
         }
         RunLoop.main.add(timer, forMode: .common)
         nudgeTimer = timer

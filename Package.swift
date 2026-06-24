@@ -21,5 +21,5 @@ let package = Package(
             path: "Tests/MouseHaterCoreTests"
         )
     ],
-    swiftLanguageModes: [.v5]
+    swiftLanguageModes: [.v6]
 )

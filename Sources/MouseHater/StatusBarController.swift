@@ -5,6 +5,7 @@ import MouseHaterCore
 import SwiftUI
 
 /// The status-bar menu: trigger mode, an Accessibility shortcut, and Quit.
+@MainActor
 final class StatusBarController: NSObject {
     enum AccessibilityStatus {
         case granted

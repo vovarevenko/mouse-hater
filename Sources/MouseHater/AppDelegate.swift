@@ -2,6 +2,7 @@
 
 import AppKit
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate {
     private let settings = Settings()
     private let overlay = OverlayController()
@@ -73,7 +74,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
         accessibilityTimer?.invalidate()
         accessibilityTimer = Timer.scheduledTimer(withTimeInterval: 2.0,
                                                   repeats: true) { [weak self] _ in
-            self?.refreshAccessibility(promptIfNeeded: false)
+            MainActor.assumeIsolated {
+                self?.refreshAccessibility(promptIfNeeded: false)
+            }
         }
     }
 
