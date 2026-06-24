@@ -2,7 +2,7 @@
 
 import ServiceManagement
 
-/// "Open at login" via the system service manager. The state is owned by macOS
+/// "Open at Login" via the system service manager. The state is owned by macOS
 /// (visible in System Settings ▸ General ▸ Login Items), not by our defaults —
 /// so we read it from, and write it through, `SMAppService.mainApp`.
 enum LoginItem {

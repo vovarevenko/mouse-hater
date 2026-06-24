@@ -75,7 +75,7 @@ final class StatusBarController: NSObject {
 
         menu.addItem(.separator())
 
-        loginItem = NSMenuItem(title: "Open at login",
+        loginItem = NSMenuItem(title: "Open at Login",
                                action: #selector(toggleLoginItem),
                                keyEquivalent: "")
         loginItem.target = self
