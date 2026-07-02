@@ -93,7 +93,7 @@ The menu also has a **Keyboard guide…** item — an in-app cheat sheet of the 
 
 ## Build & run
 
-Requires macOS 13+ and a Swift 6 toolchain (Xcode 16+).
+Requires an Apple Silicon Mac, macOS 13+, and a Swift 6 toolchain (Xcode 16+).
 
 ```sh
 ./build.sh            # release build -> build/Mouse Hater.app

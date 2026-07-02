@@ -16,6 +16,9 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
   `open` it to run.
 - `SANDBOX=1 ./build.sh release` — build the same app with
   `Resources/MouseHater.entitlements` for Mac App Store sandbox smoke testing.
+- `SANDBOX=1 ./build.sh release` — build an Apple Silicon (`arm64`) release
+  bundle for smoke testing. Intel (`x86_64`) release builds are intentionally
+  unsupported.
 
 ## Gotchas
 

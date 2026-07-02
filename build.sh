@@ -6,10 +6,15 @@
 #
 # For a Mac App Store sandbox smoke test:
 #   SANDBOX=1 ./build.sh release
+#
+# Mouse Hater is released for Apple Silicon Macs only:
+#   ARCHS=arm64 ./build.sh release
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 CONFIG="${1:-release}"
+ARCHS="${ARCHS:-arm64}"
+MACOS_DEPLOYMENT_TARGET="${MACOS_DEPLOYMENT_TARGET:-13.0}"
 APP="$ROOT/build/Mouse Hater.app"
 LEGACY_APP="$ROOT/build/MouseHater.app"
 INFO_PLIST="$ROOT/Resources/Info.plist"
@@ -34,15 +39,36 @@ case "${SANDBOX:-0}" in
     ;;
 esac
 
-echo "==> swift build -c $CONFIG"
-BIN_DIR="$(swift build --package-path "$ROOT" -c "$CONFIG" --show-bin-path)"
-swift build --package-path "$ROOT" -c "$CONFIG"
-
-BIN="$BIN_DIR/MouseHater"
-if [ ! -x "$BIN" ]; then
-  echo "Built executable not found: $BIN" >&2
-  exit 1
+ARCH_LIST=()
+if [ -n "$ARCHS" ]; then
+  for arch in ${ARCHS//,/ }; do
+    case "$arch" in
+      arm64) ARCH_LIST+=("$arch") ;;
+      *)
+        echo "Unsupported ARCHS value '$arch' (Mouse Hater release builds support arm64 only)" >&2
+        exit 64
+        ;;
+    esac
+  done
 fi
+
+echo "==> swift build -c $CONFIG"
+BINARIES=()
+for arch in "${ARCH_LIST[@]}"; do
+  triple="$arch-apple-macosx$MACOS_DEPLOYMENT_TARGET"
+  scratch="$ROOT/.build/$CONFIG-$arch"
+
+  echo "==> swift build -c $CONFIG --triple $triple"
+  BIN_DIR="$(swift build --package-path "$ROOT" -c "$CONFIG" --triple "$triple" --scratch-path "$scratch" --show-bin-path)"
+  swift build --package-path "$ROOT" -c "$CONFIG" --triple "$triple" --scratch-path "$scratch"
+
+  BIN="$BIN_DIR/MouseHater"
+  if [ ! -x "$BIN" ]; then
+    echo "Built executable not found: $BIN" >&2
+    exit 1
+  fi
+  BINARIES+=("$BIN")
+done
 
 echo "==> Validating Info.plist"
 plutil -lint "$INFO_PLIST" >/dev/null
@@ -61,7 +87,7 @@ if [ "$LEGACY_APP" != "$APP" ]; then
   rm -rf "$LEGACY_APP"
 fi
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/MouseHater"
+cp "${BINARIES[0]}" "$APP/Contents/MacOS/MouseHater"
 cp "$INFO_PLIST" "$APP/Contents/Info.plist"
 cp "$ICON_FILE" "$APP/Contents/Resources/MouseHater.icns"
 
