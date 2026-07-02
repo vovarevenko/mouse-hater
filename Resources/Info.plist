@@ -8,6 +8,8 @@
 	<string>Mouse Hater</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.revenko.mouse-hater</string>
+	<key>CFBundleIconFile</key>
+	<string>MouseHater</string>
 	<key>CFBundleExecutable</key>
 	<string>MouseHater</string>
 	<key>CFBundlePackageType</key>

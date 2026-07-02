@@ -13,6 +13,7 @@ CONFIG="${1:-release}"
 APP="$ROOT/build/Mouse Hater.app"
 LEGACY_APP="$ROOT/build/MouseHater.app"
 INFO_PLIST="$ROOT/Resources/Info.plist"
+ICON_FILE="$ROOT/Resources/MouseHater.icns"
 ENTITLEMENTS="$ROOT/Resources/MouseHater.entitlements"
 USE_SANDBOX=false
 
@@ -45,6 +46,10 @@ fi
 
 echo "==> Validating Info.plist"
 plutil -lint "$INFO_PLIST" >/dev/null
+if [ ! -f "$ICON_FILE" ]; then
+  echo "App icon not found: $ICON_FILE" >&2
+  exit 1
+fi
 if $USE_SANDBOX; then
   echo "==> Validating sandbox entitlements"
   plutil -lint "$ENTITLEMENTS" >/dev/null
@@ -58,6 +63,7 @@ fi
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/MouseHater"
 cp "$INFO_PLIST" "$APP/Contents/Info.plist"
+cp "$ICON_FILE" "$APP/Contents/Resources/MouseHater.icns"
 
 # Code signing. The default is ad-hoc. A stable signing identity keeps the macOS
 # Accessibility grant from resetting on every rebuild (TCC tracks the identity,
