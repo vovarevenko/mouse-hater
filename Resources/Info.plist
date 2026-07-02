@@ -10,6 +10,8 @@
 	<string>org.revenko.mouse-hater</string>
 	<key>CFBundleIconFile</key>
 	<string>MouseHater</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
 	<key>CFBundleExecutable</key>
 	<string>MouseHater</string>
 	<key>CFBundlePackageType</key>
