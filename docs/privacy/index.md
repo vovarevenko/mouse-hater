@@ -1,6 +1,6 @@
 # Mouse Hater Privacy Policy
 
-Last updated: July 2, 2026
+Last updated: July 3, 2026
 
 Mouse Hater does not collect, transmit, sell, rent, or share personal data.
 
@@ -16,5 +16,4 @@ Mouse Hater asks macOS for Accessibility permission so it can detect the global
 keyboard trigger and synthesize mouse clicks. This permission is used only for
 the app's keyboard-driven mouse-control features.
 
-For support or privacy questions, use the Support URL listed on the App Store
-product page.
+For support or privacy questions, use the [Support page](../support/).
