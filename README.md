@@ -108,16 +108,19 @@ Before a release, run:
 ```sh
 swift test
 swift build -c release
-./build.sh release
+SANDBOX=1 ./build.sh release
 ```
 
 `build.sh` compiles with SwiftPM, assembles the `.app` bundle, and code-signs it
 (ad-hoc by default — see *Accessibility permission* for a stable identity). It
-also validates `Resources/Info.plist` and verifies the resulting code signature.
+also validates `Resources/Info.plist`, `Resources/PrivacyInfo.xcprivacy`, and
+the sandbox entitlements, then verifies the resulting code signature.
 The app runs as a background agent (no Dock icon); look for the
 `cursorarrow.click.2` icon in the menu bar.
 
 You can also open `Package.swift` in Xcode and run from there.
+
+For Mac App Store packaging, see [RELEASE.md](RELEASE.md).
 
 ## Accessibility permission
 

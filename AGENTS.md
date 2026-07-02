@@ -19,6 +19,9 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
 - `SANDBOX=1 ./build.sh release` — build an Apple Silicon (`arm64`) release
   bundle for smoke testing. Intel (`x86_64`) release builds are intentionally
   unsupported.
+- `./scripts/package-app-store.sh` — build a signed Mac App Store `.pkg`; needs
+  `APP_SIGN_IDENTITY`, `INSTALLER_SIGN_IDENTITY`, `TEAM_ID`, and
+  `PROVISIONING_PROFILE` in the environment.
 
 ## Gotchas
 

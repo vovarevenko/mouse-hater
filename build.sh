@@ -20,7 +20,8 @@ LEGACY_APP="$ROOT/build/MouseHater.app"
 INFO_PLIST="$ROOT/Resources/Info.plist"
 ICON_FILE="$ROOT/Resources/MouseHater.icns"
 PRIVACY_INFO="$ROOT/Resources/PrivacyInfo.xcprivacy"
-ENTITLEMENTS="$ROOT/Resources/MouseHater.entitlements"
+ENTITLEMENTS="${ENTITLEMENTS:-$ROOT/Resources/MouseHater.entitlements}"
+PROVISIONING_PROFILE="${PROVISIONING_PROFILE:-}"
 USE_SANDBOX=false
 
 case "$CONFIG" in
@@ -93,6 +94,13 @@ cp "${BINARIES[0]}" "$APP/Contents/MacOS/MouseHater"
 cp "$INFO_PLIST" "$APP/Contents/Info.plist"
 cp "$ICON_FILE" "$APP/Contents/Resources/MouseHater.icns"
 cp "$PRIVACY_INFO" "$APP/Contents/Resources/PrivacyInfo.xcprivacy"
+if [ -n "$PROVISIONING_PROFILE" ]; then
+  if [ ! -f "$PROVISIONING_PROFILE" ]; then
+    echo "Provisioning profile not found: $PROVISIONING_PROFILE" >&2
+    exit 1
+  fi
+  cp "$PROVISIONING_PROFILE" "$APP/Contents/embedded.provisionprofile"
+fi
 
 # Code signing. The default is ad-hoc. A stable signing identity keeps the macOS
 # Accessibility grant from resetting on every rebuild (TCC tracks the identity,
