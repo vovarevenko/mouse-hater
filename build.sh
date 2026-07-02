@@ -3,6 +3,9 @@
 #
 # Builds Mouse Hater and assembles a runnable .app bundle under ./build.
 # Usage: ./build.sh [debug|release]   (default: release)
+#
+# For a Mac App Store sandbox smoke test:
+#   SANDBOX=1 ./build.sh release
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -10,11 +13,22 @@ CONFIG="${1:-release}"
 APP="$ROOT/build/Mouse Hater.app"
 LEGACY_APP="$ROOT/build/MouseHater.app"
 INFO_PLIST="$ROOT/Resources/Info.plist"
+ENTITLEMENTS="$ROOT/Resources/MouseHater.entitlements"
+USE_SANDBOX=false
 
 case "$CONFIG" in
   debug|release) ;;
   *)
     echo "Usage: $0 [debug|release]" >&2
+    exit 64
+    ;;
+esac
+
+case "${SANDBOX:-0}" in
+  1|true|TRUE|yes|YES) USE_SANDBOX=true ;;
+  0|false|FALSE|no|NO) ;;
+  *)
+    echo "SANDBOX must be 0 or 1" >&2
     exit 64
     ;;
 esac
@@ -31,6 +45,10 @@ fi
 
 echo "==> Validating Info.plist"
 plutil -lint "$INFO_PLIST" >/dev/null
+if $USE_SANDBOX; then
+  echo "==> Validating sandbox entitlements"
+  plutil -lint "$ENTITLEMENTS" >/dev/null
+fi
 
 echo "==> Assembling $APP"
 rm -rf "$APP"
@@ -63,7 +81,12 @@ if [ "$SIGN_IDENTITY" = "-" ]; then
 else
   echo "==> Code signing with stable identity ($SIGN_IDENTITY)"
 fi
-codesign --force --sign "$SIGN_IDENTITY" --identifier org.revenko.mouse-hater "$APP"
+codesign_args=(--force --sign "$SIGN_IDENTITY" --identifier org.revenko.mouse-hater)
+if $USE_SANDBOX; then
+  echo "==> Applying sandbox entitlements"
+  codesign_args+=(--entitlements "$ENTITLEMENTS")
+fi
+codesign "${codesign_args[@]}" "$APP"
 codesign --verify --strict --verbose=2 "$APP"
 
 echo "==> Done: $APP"

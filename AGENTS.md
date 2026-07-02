@@ -14,6 +14,8 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
 - `./build.sh [debug|release]` — build, assemble, and sign `build/Mouse Hater.app`
   (release by default), lint `Resources/Info.plist`, and verify the signature;
   `open` it to run.
+- `SANDBOX=1 ./build.sh release` — build the same app with
+  `Resources/MouseHater.entitlements` for Mac App Store sandbox smoke testing.
 
 ## Gotchas
 
