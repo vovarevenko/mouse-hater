@@ -11,7 +11,7 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
 
 - `swift build` — compile check.
 - `swift test` — run the pure core state-machine and geometry tests.
-- `./build.sh [debug|release]` — build, assemble, and sign `build/MouseHater.app`
+- `./build.sh [debug|release]` — build, assemble, and sign `build/Mouse Hater.app`
   (release by default), lint `Resources/Info.plist`, and verify the signature;
   `open` it to run.
 

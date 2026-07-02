@@ -7,7 +7,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 CONFIG="${1:-release}"
-APP="$ROOT/build/MouseHater.app"
+APP="$ROOT/build/Mouse Hater.app"
+LEGACY_APP="$ROOT/build/MouseHater.app"
 INFO_PLIST="$ROOT/Resources/Info.plist"
 
 case "$CONFIG" in
@@ -33,6 +34,9 @@ plutil -lint "$INFO_PLIST" >/dev/null
 
 echo "==> Assembling $APP"
 rm -rf "$APP"
+if [ "$LEGACY_APP" != "$APP" ]; then
+  rm -rf "$LEGACY_APP"
+fi
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/MouseHater"
 cp "$INFO_PLIST" "$APP/Contents/Info.plist"

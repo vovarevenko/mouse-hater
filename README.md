@@ -7,7 +7,7 @@ sequence of keys to narrow to a point and click it.
 
 ## First launch
 
-Open `MouseHater.app`, then look for the cursor icon in the menu bar.
+Open `Mouse Hater.app`, then look for the cursor icon in the menu bar.
 
 Mouse Hater asks for **Accessibility** access on first launch. Enable it in
 *System Settings → Privacy & Security → Accessibility* so the app can read the
@@ -96,8 +96,8 @@ The menu also has a **Keyboard guide…** item — an in-app cheat sheet of the 
 Requires macOS 13+ and a Swift 6 toolchain (Xcode 16+).
 
 ```sh
-./build.sh            # release build → build/MouseHater.app
-open build/MouseHater.app
+./build.sh            # release build -> build/Mouse Hater.app
+open "build/Mouse Hater.app"
 ```
 
 For development, run `swift test` to verify the trigger state machine and grid
