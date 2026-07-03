@@ -143,13 +143,13 @@ Copyright © 2026 Vova Revenko
 Support URL:
 
 ```text
-https://vovarevenko.github.io/mouse-hater/support/
+https://vovarevenko.github.io/mouse-hater/support
 ```
 
 Privacy Policy URL:
 
 ```text
-https://vovarevenko.github.io/mouse-hater/privacy/
+https://vovarevenko.github.io/mouse-hater/privacy
 ```
 
 ## App Privacy Answers
