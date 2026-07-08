@@ -11,7 +11,7 @@ This project is a SwiftPM-built macOS menu-bar app assembled into
 - Minimum macOS: `13.0`
 - Architecture: `arm64` Apple Silicon only
 - Version: `1.0`
-- Build: `1`
+- Build: `2`
 - App icon: `Resources/MouseHater.icns`
 - Sandbox entitlements: `Resources/MouseHater.entitlements`
 - Privacy manifest: `Resources/PrivacyInfo.xcprivacy`
