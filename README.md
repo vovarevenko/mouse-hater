@@ -1,21 +1,23 @@
 # Mouse Hater
 
-Click anywhere on screen with the keyboard — no mouse, no trackpad.
+Click anywhere on screen with the keyboard when a mouse or trackpad is
+unavailable, uncomfortable, or simply not the right tool.
 
 Tap **Command** to summon a labelled grid over the screen, then type a short
 sequence of keys to narrow to a point and click it.
 
 ## First launch
 
-Open `Mouse Hater.app`, then look for the cursor icon in the menu bar.
+Open `Mouse Hater.app`, then look for the cursor icon in the menu bar. The
+first-run setup window explains the two setup actions the app can use.
 
-Mouse Hater asks for **Accessibility** access on first launch. Enable it in
-*System Settings → Privacy & Security → Accessibility* so the app can read the
-global keyboard trigger and post clicks.
+Enable **Accessibility** when you want Mouse Hater to read the global keyboard
+trigger and post clicks. Without this permission the menu is available, but the
+keyboard-clicking overlay cannot run.
 
-It also registers itself as **Open at Login** once, so it is available after
-restarts. macOS shows its standard login-item notification when this happens.
-You can turn it off or back on any time from the status-bar menu.
+**Open at Login** is optional. Turn it on in setup or from the status-bar menu if
+you want Mouse Hater ready after restarting your Mac. The app does not enable
+login launch without that explicit action.
 
 ## How it works
 
@@ -126,7 +128,7 @@ For Mac App Store packaging, see [RELEASE.md](RELEASE.md).
 
 Mouse Hater needs **Accessibility** access to read the global keyboard (the
 trigger) and to synthesise clicks. The menu shows the current status, and the
-menu's *Accessibility* item reopens the right System Settings pane.
+menu's *Enable Accessibility...* item starts the macOS permission prompt.
 
 > **Keeping the permission across rebuilds.** macOS tracks the grant by the app's
 > code signature, so the default ad-hoc build asks for access again after each

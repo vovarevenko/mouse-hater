@@ -46,6 +46,6 @@ executable assembled into a `.app` by `build.sh`. Flow: `HotkeyMonitor` (a
 - **Privacy manifest:** keep `Resources/PrivacyInfo.xcprivacy` in the bundle.
   The app currently declares no data collection/tracking and a UserDefaults
   required-reason API entry for local preferences.
-- **Login item:** first successful launch auto-registers the app as Open at
-  Login exactly once. macOS surfaces this as a login-item notification; the menu
-  remains the user's explicit toggle afterward.
+- **Login item:** the app must never auto-register as Open at Login. First-run
+  setup may offer it, but `SMAppService.mainApp.register()` should only run after
+  an explicit user action in setup or the menu.

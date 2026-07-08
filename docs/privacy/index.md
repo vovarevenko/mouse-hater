@@ -8,9 +8,9 @@ The app runs locally on your Mac. It does not include analytics, advertising,
 tracking SDKs, crash reporting SDKs, account systems, or network features.
 
 Mouse Hater stores only local preferences on your device, such as the selected
-trigger mode and whether the one-time Open at Login setup has already been
-offered. These preferences are stored in the app's local UserDefaults container
-and are not sent anywhere.
+trigger mode and whether the first-run setup window has already been completed
+or closed. These preferences are stored in the app's local UserDefaults
+container and are not sent anywhere.
 
 Mouse Hater asks macOS for Accessibility permission so it can detect the global
 keyboard trigger and synthesize mouse clicks. This permission is used only for

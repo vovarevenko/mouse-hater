@@ -100,13 +100,13 @@ Utilities
 Short promotional text:
 
 ```text
-Click anywhere on your Mac using only the keyboard.
+Click anywhere on your Mac from the keyboard.
 ```
 
 Description:
 
 ```text
-Mouse Hater is a macOS menu-bar utility for controlling the mouse from the
+Mouse Hater is a macOS menu-bar utility for controlling mouse clicks from the
 keyboard on Apple Silicon Macs.
 
 Tap Command to open a labeled grid over the screen, type a short key sequence to
@@ -114,7 +114,8 @@ narrow the target, and click without reaching for a mouse or trackpad. For small
 targets, hold the final key to nudge the click point before release.
 
 Mouse Hater is designed to stay out of the way: it has no Dock icon, lives in
-the menu bar, and can launch at login so it is ready when you start your Mac.
+the menu bar, and offers an optional Open at Login setting so it can be ready
+after restarting your Mac.
 
 Features:
 - Keyboard-driven left and right clicks
@@ -124,14 +125,15 @@ Features:
 - Menu-bar status and keyboard guide
 - Local-only preferences, no accounts, no analytics, no tracking
 
-Mouse Hater requires macOS Accessibility permission so it can detect the global
-keyboard trigger and synthesize clicks.
+Mouse Hater requires macOS Accessibility permission for its keyboard-driven
+mouse-control feature: detecting the global keyboard trigger and synthesizing the
+click selected by the user.
 ```
 
 Keywords draft (keep within App Store Connect's limit):
 
 ```text
-mouse,keyboard,click,cursor,accessibility,utility,productivity
+mouse,keyboard,click,cursor,accessibility,utility,assistive
 ```
 
 Copyright:
@@ -173,25 +175,28 @@ The app stores local preferences with UserDefaults only. This is declared in
 Paste into App Review notes and adjust if needed:
 
 ```text
-Mouse Hater is a macOS menu-bar accessibility utility for keyboard-driven mouse
-clicking.
+Mouse Hater is a macOS menu-bar utility for keyboard-driven mouse clicking,
+intended for situations where using a mouse or trackpad is unavailable,
+uncomfortable, or not preferred.
 
-The app requires Accessibility permission to detect the global Command-key
-trigger and to synthesize mouse clicks. It does not collect data, does not use
-networking, does not include analytics or ads, and does not track users.
+The app requires Accessibility permission only for its user-requested
+keyboard-driven mouse-control feature: detecting the global Command-key trigger
+and synthesizing the click selected by the user. It does not collect data, does
+not use networking, does not include analytics or ads, and does not track users.
 
 The app has no Dock icon because it is an LSUIElement menu-bar utility. After
-launch, use the cursor icon in the menu bar. On first launch it registers as
-Open at Login once because the utility is intended to be available whenever the
-user starts the Mac. Users can disable or re-enable Open at Login from the
-status-bar menu or System Settings.
+launch, use the cursor icon in the menu bar. On first launch it shows a setup
+window. Open at Login is optional and is enabled only if the user chooses the
+setup action or the status-bar menu item.
 
 Test steps:
 1. Launch Mouse Hater.
-2. Grant Accessibility permission in System Settings when prompted.
-3. Tap Command to show the grid overlay.
-4. Type a column key, row key, and final target key to click.
-5. Use the menu-bar icon to open the keyboard guide, change trigger mode, or quit.
+2. In the setup window, optionally enable Open at Login.
+3. Choose Request Permission, grant Accessibility permission, and return to Mouse
+   Hater.
+4. Tap Command to show the grid overlay.
+5. Type a column key, row key, and final target key to click.
+6. Use the menu-bar icon to open the keyboard guide, change trigger mode, or quit.
 ```
 
 ## Screenshot Plan
@@ -199,11 +204,12 @@ Test steps:
 App Store Connect will require macOS screenshots. Capture clean screenshots on a
 Mac after a release build:
 
-1. Menu-bar menu open, showing Trigger, Open at Login, Keyboard guide,
-   Accessibility, and Quit.
-2. Grid overlay visible on a normal desktop/app window.
-3. Keyboard guide dialog.
-4. Optional: nudge/crosshair mode if it is visually clear.
+1. Setup window showing the optional Open at Login and Accessibility actions.
+2. Menu-bar menu open, showing Trigger, Open at Login, Keyboard guide,
+   Setup, Accessibility, and Quit.
+3. Grid overlay visible on a normal desktop/app window.
+4. Keyboard guide dialog.
+5. Optional: nudge/crosshair mode if it is visually clear.
 
 Avoid screenshots that show private files, accounts, notifications, or unrelated
 apps. Use a plain desktop or a neutral test window behind the overlay.
