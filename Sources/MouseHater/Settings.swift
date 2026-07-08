@@ -7,7 +7,7 @@ import MouseHaterCore
 final class Settings {
     private let defaults = UserDefaults.standard
     private let triggerKey = "triggerMode"
-    private let didOfferLoginItemKey = "didOfferLoginItem"
+    private let didCompleteOnboardingKey = "didCompleteOnboarding"
 
     var triggerMode: TriggerMode {
         get {
@@ -20,11 +20,9 @@ final class Settings {
         set { defaults.set(newValue.rawValue, forKey: triggerKey) }
     }
 
-    /// Whether we've already done the one-time login-item setup. Guards against
-    /// re-registering on every launch, which would override a user who later
-    /// turned the login item off.
-    var didOfferLoginItem: Bool {
-        get { defaults.bool(forKey: didOfferLoginItemKey) }
-        set { defaults.set(newValue, forKey: didOfferLoginItemKey) }
+    /// Whether the first-run setup window has already been completed or closed.
+    var didCompleteOnboarding: Bool {
+        get { defaults.bool(forKey: didCompleteOnboardingKey) }
+        set { defaults.set(newValue, forKey: didCompleteOnboardingKey) }
     }
 }

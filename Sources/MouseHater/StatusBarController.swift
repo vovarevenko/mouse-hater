@@ -18,6 +18,8 @@ final class StatusBarController: NSObject {
     private let menu = NSMenu()
 
     var onMenuOpen: (() -> Void)?
+    var onRequestAccessibility: (() -> Void)?
+    var onShowOnboarding: (() -> Void)?
 
     private var singleTapItem: NSMenuItem!
     private var doubleTapItem: NSMenuItem!
@@ -46,10 +48,10 @@ final class StatusBarController: NSObject {
             accessItem.title = "Accessibility: granted"
             accessItem.state = .on
         case .notGranted:
-            accessItem.title = "Accessibility: not granted — click to open Settings"
+            accessItem.title = "Enable Accessibility..."
             accessItem.state = .off
         case .unavailable:
-            accessItem.title = "Accessibility: unavailable — click to open Settings"
+            accessItem.title = "Accessibility unavailable - open Settings"
             accessItem.state = .mixed
         }
     }
@@ -88,6 +90,12 @@ final class StatusBarController: NSObject {
                                    keyEquivalent: "")
         guideItem.target = self
         menu.addItem(guideItem)
+
+        let setupItem = NSMenuItem(title: "Setup...",
+                                   action: #selector(showSetup),
+                                   keyEquivalent: "")
+        setupItem.target = self
+        menu.addItem(setupItem)
 
         menu.addItem(.separator())
 
@@ -150,8 +158,11 @@ final class StatusBarController: NSObject {
     }
 
     @objc private func openAccessibility() {
-        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
-        NSWorkspace.shared.open(url)
+        onRequestAccessibility?()
+    }
+
+    @objc private func showSetup() {
+        onShowOnboarding?()
     }
 
     @objc private func quit() {

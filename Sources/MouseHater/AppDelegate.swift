@@ -9,19 +9,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
     private var hotkey: HotkeyMonitor!
     private var status: StatusBarController!
     private var accessibilityTimer: Timer?
+    private var onboarding: OnboardingWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         status = StatusBarController(settings: settings)
         status.onMenuOpen = { [weak self] in
             self?.refreshAccessibility(promptIfNeeded: false)
         }
+        status.onRequestAccessibility = { [weak self] in
+            self?.requestAccessibilityPermission()
+        }
+        status.onShowOnboarding = { [weak self] in
+            self?.showOnboarding()
+        }
 
         hotkey = HotkeyMonitor(settings: settings)
         hotkey.delegate = self
         overlay.onDeactivate = { [weak self] in self?.hotkey.resetTriggerState() }
 
-        bootstrapLoginItem()
         bootstrapAccessibility()
+        showOnboardingIfNeeded()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -43,33 +50,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
         overlay.handleKeyUp(keycode)
     }
 
-    // MARK: - Login item
-
-    /// A menu-bar agent is useless when it isn't running, so opt into launch-at-
-    /// login on the very first launch. This runs exactly once: afterward the
-    /// user's choice (here or in System Settings) is theirs to keep.
-    private func bootstrapLoginItem() {
-        guard !settings.didOfferLoginItem else { return }
-
-        // The user may already have a stake — enabled it themselves, or disabled
-        // it in System Settings (.requiresApproval). Either way, stop offering.
-        if LoginItem.isEnabled || LoginItem.requiresApproval {
-            settings.didOfferLoginItem = true
-            return
-        }
-
-        // Mark the one-time setup done only once registration actually succeeds,
-        // so a transient failure is retried on the next launch instead of being
-        // skipped forever.
-        if LoginItem.setEnabled(true) {
-            settings.didOfferLoginItem = true
-        }
-    }
-
     // MARK: - Accessibility
 
     private func bootstrapAccessibility() {
-        refreshAccessibility(promptIfNeeded: true)
+        refreshAccessibility(promptIfNeeded: false)
 
         accessibilityTimer?.invalidate()
         accessibilityTimer = Timer.scheduledTimer(withTimeInterval: 2.0,
@@ -96,5 +80,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate, HotkeyMonitorDelegate 
             overlay.dismiss()
             status.updateAccess(.unavailable)
         }
+    }
+
+    private func requestAccessibilityPermission() {
+        HotkeyMonitor.promptAccessibility()
+        refreshAccessibility(promptIfNeeded: false)
+    }
+
+    // MARK: - Onboarding
+
+    private func showOnboardingIfNeeded() {
+        guard !settings.didCompleteOnboarding else { return }
+        showOnboarding()
+    }
+
+    private func showOnboarding() {
+        if let onboarding {
+            onboarding.showWindow(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let controller = OnboardingWindowController(
+            isLoginItemEnabled: { LoginItem.isEnabled },
+            enableLoginItem: { LoginItem.setEnabled(true) },
+            openLoginItemSettings: { LoginItem.openSystemSettings() },
+            isAccessibilityTrusted: { HotkeyMonitor.isAccessibilityTrusted() },
+            requestAccessibility: { [weak self] in self?.requestAccessibilityPermission() },
+            onClose: { [weak self] in
+                self?.settings.didCompleteOnboarding = true
+                self?.onboarding = nil
+            })
+
+        onboarding = controller
+        controller.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 }
